@@ -1,4 +1,4 @@
-$data = get-content -Path D:\Users\JB\Documents\Source\Advent2020\Day1\inputdata.txt
+[int[]]$data = get-content -Path .\Day1\inputdata.txt
 $start = 1
 $iterations = 0
 foreach ($item in $data)
@@ -7,11 +7,11 @@ foreach ($item in $data)
     {
         $iterations++
         #"$item === $other"
-        if ([int]$item + $other -eq 2020)
+        if ($item + $other -eq 2020)
         { 
             #"$item + $other = $($item + $other)"
             #"in $iterations iterations"
-            "$item x $other = $([int]$item * $other)"
+            "$item x $other = $($item * $other)"
             return
         }
     }
