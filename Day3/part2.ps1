@@ -15,6 +15,7 @@ foreach ($down in (1,2))
         for ($i = 1; $i -lt $map.Count; $i++)
         {
             Write-Verbose "$(($i * $right) % $mod) : $($i * $down)" 
+            # The pattern doesn't repeat downward so we need to stop!
             if ( $down * $i -gt $map.Count) {break}
             # Down 1, Over 3, Mod simulates the repeating pattern
             if ($map[$i * $down][(($i * $right) % $mod)] -eq '#')
