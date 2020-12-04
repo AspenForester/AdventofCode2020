@@ -1,4 +1,4 @@
-$foo = get-content "C:\Users\jole001\Source\AdventOfCode2020\Day3\input.txt"
+$foo = get-content ".\Day3\input.txt"
 $parts = @()
 $map = foreach ($row in $foo)
 {
@@ -23,11 +23,12 @@ foreach ($down in (1,2))
                 $Count++
             }
         }
-        "Right $Right, Down $down = $count"
+        Write-verbose "Right $Right, Down $down = $count"
         $parts = $parts + $count
     }
 }
 
+# Multiply the list of tree counts together.
 $product = 1
 $parts.ForEach({$product*= $_})
 $product
