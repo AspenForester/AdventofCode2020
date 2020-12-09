@@ -1,12 +1,16 @@
-$in = get-content ".\Day8\sample.txt"
+$in = get-content ".\Day8\input.txt"
 
-$linesExecuted = @()
-$thisLineNumber = 0
-[int]$accumulator = 0
+
+
 $CommandParser = [regex]"^(?<Operation>nop|acc|jmp) (?<argument>[+-]\d+$)"
 
-# do
-# {
+$ChangeIndex =0 # The nth jmp or nop encountered should be changed
+do 
+{
+    [int]$accumulator = 0
+    $thisLineNumber = 0
+    $linesExecuted = @()
+    $instructionIndex = 0 # The nth jmp/nop we've encountered so far
     while ($thisLineNumber -notin $linesExecuted -and $thisLineNumber -lt $in.count)
     {
         $m = $CommandParser.Match($in[$thisLineNumber])
@@ -16,21 +20,52 @@ $CommandParser = [regex]"^(?<Operation>nop|acc|jmp) (?<argument>[+-]\d+$)"
             acc
             { 
                 $accumulator = $accumulator + [int]($m.Groups["argument"].value)
+                write-verbose "[$thisLineNumber] : [$($in[$thisLineNumber ])]" -verbose
                 $thisLineNumber++
+                
             }
             jmp
             {
-                $thisLineNumber += [int]($m.Groups["argument"].value)
+                if ($instructionIndex -eq $ChangeIndex)
+                {
+                    # Switch to a NOP
+                    $ChangedInstruction = $thisLineNumber
+                    write-verbose "[$thisLineNumber] : nop [$(($m.Groups["argument"].value))]" -verbose
+                    $thisLineNumber++
+                }
+                else {
+                    write-verbose "[$thisLineNumber] : [$($in[$thisLineNumber ])]" -verbose
+                    $thisLineNumber += [int]($m.Groups["argument"].value)
+                }
+                $instructionIndex++
+                
             }
             nop
             {
-                $thisLineNumber++
+                if ($instructionIndex -eq $ChangeIndex)
+                {
+                    $ChangedInstruction = $thisLineNumber
+                    # Change to a jmp
+                    write-verbose "[$thisLineNumber] : jmp [$(($m.Groups["argument"].value))]" -verbose
+                    $thisLineNumber += [int]($m.Groups["argument"].value)
+                }
+                else
+                {
+                    write-verbose "[$thisLineNumber] : [$($in[$thisLineNumber ])]" -verbose
+                    $thisLineNumber++
+                }
+                $instructionIndex++
             }
             Default { Throw "Operation [$($m.Groups["Operation"].value)] is not expected" }
         }
     }
+    "Last line executed"
+    "$($linesExecuted[-1] + 1) : [$($in[$linesExecuted[-1]])]"
+    # Next time around change the nth jmp/nop
+    $ChangeIndex++ 
 
-# } until ($thisLineNumber -ge $in.count)
+} until ($thisLineNumber -ge $in.count)
 
-"$($linesExecuted[-1] + 1) : [$($in[$linesExecuted[-1]])]"
-$accumulator
+
+if ($linesExecuted[-1] + 1 -eq $in.Count) {"Ran to completion!"}
+"Accumulator: [$accumulator]"
