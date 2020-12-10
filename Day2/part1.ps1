@@ -13,6 +13,7 @@ foreach($string in $data)
     $requiredLetter = $myMatches.groups[3].Value
     $pass = $myMatches.groups[4].Value
 
+    # Should have used Group-Object!
     $rightLetters = $pass.ToCharArray().Where({$_ -eq $requiredLetter})
 
     # Because $true + $true = 2
